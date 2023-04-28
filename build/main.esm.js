@@ -1,6 +1,4 @@
-'use strict';
-
-var crypto = require('crypto');
+import crypto from 'crypto';
 
 /* global BigInt */
 const hexLen = [0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4];
@@ -1042,6 +1040,4 @@ class ZqField {
 
 const Scalar = _Scalar;
 
-exports.F1Field = ZqField;
-exports.Scalar = Scalar;
-exports.ZqField = ZqField;
+export { ZqField as F1Field, Scalar, ZqField };
