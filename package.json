@@ -1,5 +1,5 @@
 {
-  "name": "ffjavascript",
+  "name": "@toruslabs/ffjavascript",
   "type": "module",
   "version": "0.2.57",
   "description": "Finite Field Library in Javascript",
@@ -41,5 +41,8 @@
     "mocha": "^10.2.0",
     "rimraf": "^5.0.0",
     "rollup": "^3.21.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
