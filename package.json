@@ -40,9 +40,13 @@
     "eslint": "^8.39.0",
     "mocha": "^10.2.0",
     "rimraf": "^5.0.0",
-    "rollup": "^3.21.0"
+    "rollup": "^3.21.3"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=16.x",
+    "npm": ">=8.x"
   }
 }
