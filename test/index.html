@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+  FFjavascript test
+</head>
+<body>
+  <script src="../build/main.umd.min.js"></script>
+  <script>
+    console.log(Ffjavascript);
+    const { Scalar, ZqField } = Ffjavascript;
+    console.assert(Scalar.eq(Scalar.e("0x12"), 18), "scalar test failed");
+    const F = new ZqField(7);
+    const res = F.inv(F.e(4));
+    console.assert(F.eq(res, F.e(2)), "zq test failed");
+    console.log("All tests passed");
+  </script>
+</body>
