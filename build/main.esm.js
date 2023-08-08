@@ -315,6 +315,7 @@ var _Scalar = /*#__PURE__*/Object.freeze({
     snarkjs. If not, see <https://www.gnu.org/licenses/>.
 */
 
+
 /*
 exports.mulScalar = (F, base, e) =>{
     let res = F.zero;
