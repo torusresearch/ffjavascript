@@ -8,7 +8,6 @@
   "unpkg": "./build/main.umd.min.js",
   "jsdelivr": "./build/main.umd.min.js",
   "files": [
-    "src",
     "build"
   ],
   "scripts": {
@@ -34,12 +33,12 @@
   },
   "homepage": "https://github.com/iden3/ffjs#readme",
   "devDependencies": {
-    "@rollup/plugin-terser": "^0.4.3",
+    "@rollup/plugin-terser": "^0.4.4",
     "chai": "^4.3.7",
-    "eslint": "^8.46.0",
-    "mocha": "^10.2.0",
-    "rimraf": "^5.0.1",
-    "rollup": "^3.27.2"
+    "eslint": "^9.0.0",
+    "mocha": "^10.4.0",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.14.1"
   },
   "publishConfig": {
     "access": "public"
