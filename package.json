@@ -1,7 +1,7 @@
 {
   "name": "@toruslabs/ffjavascript",
   "type": "module",
-  "version": "2.1.0",
+  "version": "1.0.0",
   "description": "Finite Field Library in Javascript",
   "main": "./build/main.cjs",
   "module": "./build/main.esm.js",
@@ -33,12 +33,12 @@
   },
   "homepage": "https://github.com/iden3/ffjs#readme",
   "devDependencies": {
-    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-terser": "^0.4.3",
     "chai": "^4.3.7",
-    "eslint": "^9.0.0",
-    "mocha": "^10.4.0",
-    "rimraf": "^5.0.5",
-    "rollup": "^4.14.1"
+    "eslint": "^8.46.0",
+    "mocha": "^10.2.0",
+    "rimraf": "^5.0.1",
+    "rollup": "^3.27.2"
   },
   "publishConfig": {
     "access": "public"
