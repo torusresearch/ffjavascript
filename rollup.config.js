@@ -19,6 +19,16 @@ export default [
         file: "build/main.esm.js",
         format: "esm",
       },
+      {
+        dir: "build/lib.cjs",
+        format: "cjs",
+        preserveModules: true,
+      },
+      {
+        dir: "build/lib.esm",
+        format: "esm",
+        preserveModules: true,
+      },
     ],
     external: [...Object.keys(pkg.dependencies || {})],
   },

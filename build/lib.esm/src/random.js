@@ -1,4 +1,4 @@
-export function getRandomBytes(n) {
+function getRandomBytes(n) {
   let array = new Uint8Array(n);
   // Browser & Node
   if (typeof globalThis.crypto !== "undefined") {
@@ -12,3 +12,5 @@ export function getRandomBytes(n) {
   }
   return array;
 }
+
+export { getRandomBytes };
