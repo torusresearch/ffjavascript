@@ -10,6 +10,7 @@
   "files": [
     "build"
   ],
+  "sideEffects": false,
   "scripts": {
     "test": "mocha",
     "build": "rimraf build/ && rollup -c rollup.config.js"
