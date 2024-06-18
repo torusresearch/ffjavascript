@@ -3,8 +3,8 @@
   "type": "module",
   "version": "1.0.0",
   "description": "Finite Field Library in Javascript",
-  "main": "./build/main.cjs",
-  "module": "./build/main.esm.js",
+  "main": "./build/lib.cjs/main.js",
+  "module": "./build/lib.esm/main.js",
   "unpkg": "./build/main.umd.min.js",
   "jsdelivr": "./build/main.umd.min.js",
   "files": [
