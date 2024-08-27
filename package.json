@@ -1,6 +1,5 @@
 {
   "name": "@toruslabs/ffjavascript",
-  "type": "module",
   "version": "3.0.0",
   "description": "Finite Field Library in Javascript",
   "main": "./build/lib.cjs/main.js",
@@ -13,7 +12,7 @@
   "sideEffects": false,
   "scripts": {
     "test": "mocha",
-    "build": "rimraf build/ && rollup -c rollup.config.js"
+    "build": "rimraf build/ && rollup -c rollup.config.mjs"
   },
   "repository": {
     "type": "git",
@@ -39,7 +38,8 @@
     "eslint": "^8.46.0",
     "mocha": "^10.2.0",
     "rimraf": "^5.0.1",
-    "rollup": "^3.27.2"
+    "rollup": "^3.27.2",
+    "tsx": "^4.19.0"
   },
   "publishConfig": {
     "access": "public"

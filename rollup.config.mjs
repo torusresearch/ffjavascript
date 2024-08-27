@@ -12,7 +12,7 @@ export default [
     input: "main.js",
     output: [
       {
-        file: "build/main.cjs",
+        file: "build/main.cjs.js",
         format: "cjs",
       },
       {
