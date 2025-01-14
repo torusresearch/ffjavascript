@@ -1,5 +1,5 @@
-import fs from "fs";
 import terser from "@rollup/plugin-terser";
+import fs from "fs";
 
 function firstLetterUpperCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);

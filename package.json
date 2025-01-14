@@ -11,6 +11,7 @@
   ],
   "sideEffects": false,
   "scripts": {
+    "lint": "eslint --fix 'src/**/*.js'",
     "test": "npm run test:node && npm run test:browsers",
     "test:node": "vitest run --config test/configs/node.config.mts --coverage",
     "test:chrome": "vitest run --config test/configs/chrome.config.mts",

@@ -1,9 +1,9 @@
 /* global BigInt */
-import * as Scalar from "./scalar.js";
-import * as futils from "./futils.js";
-import buildSqrt from "./fsqrt.js";
-import { getRandomBytes } from "./random.js";
 import FFFT from "./fft.js";
+import buildSqrt from "./fsqrt.js";
+import * as futils from "./futils.js";
+import { getRandomBytes } from "./random.js";
+import * as Scalar from "./scalar.js";
 
 export default class ZqField {
   constructor(p) {

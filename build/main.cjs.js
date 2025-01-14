@@ -315,43 +315,130 @@ var _Scalar = /*#__PURE__*/Object.freeze({
     snarkjs. If not, see <https://www.gnu.org/licenses/>.
 */
 
-
 /*
-exports.mulScalar = (F, base, e) =>{
-    let res = F.zero;
-    let rem = bigInt(e);
-    let exp = base;
+    This library does operations on polynomials with coefficients in a field F.
 
-    while (! rem.eq(bigInt.zero)) {
-        if (rem.and(bigInt.one).eq(bigInt.one)) {
-            res = F.add(res, exp);
-        }
-        exp = F.double(exp);
-        rem = rem.shiftRight(1);
+    A polynomial P(x) = p0 + p1 * x + p2 * x^2 + ... + pn * x^n  is represented
+    by the array [ p0, p1, p2, ... , pn ].
+ */
+
+class FFT {
+  constructor(G, F, opMulGF) {
+    this.F = F;
+    this.G = G;
+    this.opMulGF = opMulGF;
+
+    let rem = F.sqrt_t || F.t;
+    let s = F.sqrt_s || F.s;
+
+    let nqr = F.one;
+    while (F.eq(F.pow(nqr, F.half), F.one)) nqr = F.add(nqr, F.one);
+
+    this.w = new Array(s + 1);
+    this.wi = new Array(s + 1);
+    this.w[s] = this.F.pow(nqr, rem);
+    this.wi[s] = this.F.inv(this.w[s]);
+
+    let n = s - 1;
+    while (n >= 0) {
+      this.w[n] = this.F.square(this.w[n + 1]);
+      this.wi[n] = this.F.square(this.wi[n + 1]);
+      n--;
     }
 
-    return res;
-};
-*/
+    this.roots = [];
+    /*
+        for (let i=0; i<16; i++) {
+            let r = this.F.one;
+            n = 1 << i;
+            const rootsi = new Array(n);
+            for (let j=0; j<n; j++) {
+                rootsi[j] = r;
+                r = this.F.mul(r, this.w[i]);
+            }
 
-function exp(F, base, e) {
-  if (isZero(e)) return F.one;
+            this.roots.push(rootsi);
+        }
+        */
+    this._setRoots(Math.min(s, 15));
+  }
 
-  const n = bits(e);
+  _setRoots(n) {
+    for (let i = n; i >= 0 && !this.roots[i]; i--) {
+      let r = this.F.one;
+      const nroots = 1 << i;
+      const rootsi = new Array(nroots);
+      for (let j = 0; j < nroots; j++) {
+        rootsi[j] = r;
+        r = this.F.mul(r, this.w[i]);
+      }
 
-  if (n.length == 0) return F.one;
-
-  let res = base;
-
-  for (let i = n.length - 2; i >= 0; i--) {
-    res = F.square(res);
-
-    if (n[i]) {
-      res = F.mul(res, base);
+      this.roots[i] = rootsi;
     }
   }
 
-  return res;
+  fft(p) {
+    if (p.length <= 1) return p;
+    const bits = log2(p.length - 1) + 1;
+    this._setRoots(bits);
+
+    const m = 1 << bits;
+    if (p.length != m) {
+      throw new Error("Size must be multiple of 2");
+    }
+    const res = __fft(this, p, bits, 0, 1);
+    return res;
+  }
+
+  ifft(p) {
+    if (p.length <= 1) return p;
+    const bits = log2(p.length - 1) + 1;
+    this._setRoots(bits);
+    const m = 1 << bits;
+    if (p.length != m) {
+      throw new Error("Size must be multiple of 2");
+    }
+    const res = __fft(this, p, bits, 0, 1);
+    const twoinvm = this.F.inv(this.F.mulScalar(this.F.one, m));
+    const resn = new Array(m);
+    for (let i = 0; i < m; i++) {
+      resn[i] = this.opMulGF(res[(m - i) % m], twoinvm);
+    }
+
+    return resn;
+  }
+}
+
+function log2(V) {
+  return (
+    ((V & 0xffff0000) !== 0 ? ((V &= 0xffff0000), 16) : 0) |
+    ((V & 0xff00ff00) !== 0 ? ((V &= 0xff00ff00), 8) : 0) |
+    ((V & 0xf0f0f0f0) !== 0 ? ((V &= 0xf0f0f0f0), 4) : 0) |
+    ((V & 0xcccccccc) !== 0 ? ((V &= 0xcccccccc), 2) : 0) |
+    ((V & 0xaaaaaaaa) !== 0)
+  );
+}
+
+function __fft(PF, pall, bits, offset, step) {
+  const n = 1 << bits;
+  if (n == 1) {
+    return [pall[offset]];
+  } else if (n == 2) {
+    return [PF.G.add(pall[offset], pall[offset + step]), PF.G.sub(pall[offset], pall[offset + step])];
+  }
+
+  const ndiv2 = n >> 1;
+  const p1 = __fft(PF, pall, bits - 1, offset, step * 2);
+  const p2 = __fft(PF, pall, bits - 1, offset + step, step * 2);
+
+  const out = new Array(n);
+
+  for (let i = 0; i < ndiv2; i++) {
+    out[i] = PF.G.add(p1[i], PF.opMulGF(p2[i], PF.roots[bits][i]));
+    out[i + ndiv2] = PF.G.sub(p1[i], PF.opMulGF(p2[i], PF.roots[bits][i]));
+  }
+
+  return out;
 }
 
 // Check here: https://eprint.iacr.org/2012/685.pdf
@@ -516,21 +603,6 @@ function alg8_complex(F) {
   };
 }
 
-function getRandomBytes(n) {
-  let array = new Uint8Array(n);
-  // Browser & Node
-  if (typeof globalThis.crypto !== "undefined") {
-    // Supported
-    globalThis.crypto.getRandomValues(array);
-  } else {
-    // fallback
-    for (let i = 0; i < n; i++) {
-      array[i] = (Math.random() * 4294967296) >>> 0;
-    }
-  }
-  return array;
-}
-
 /*
     Copyright 2018 0kims association.
 
@@ -550,130 +622,58 @@ function getRandomBytes(n) {
     snarkjs. If not, see <https://www.gnu.org/licenses/>.
 */
 
+
 /*
-    This library does operations on polynomials with coefficients in a field F.
+exports.mulScalar = (F, base, e) =>{
+    let res = F.zero;
+    let rem = bigInt(e);
+    let exp = base;
 
-    A polynomial P(x) = p0 + p1 * x + p2 * x^2 + ... + pn * x^n  is represented
-    by the array [ p0, p1, p2, ... , pn ].
- */
-
-class FFT {
-  constructor(G, F, opMulGF) {
-    this.F = F;
-    this.G = G;
-    this.opMulGF = opMulGF;
-
-    let rem = F.sqrt_t || F.t;
-    let s = F.sqrt_s || F.s;
-
-    let nqr = F.one;
-    while (F.eq(F.pow(nqr, F.half), F.one)) nqr = F.add(nqr, F.one);
-
-    this.w = new Array(s + 1);
-    this.wi = new Array(s + 1);
-    this.w[s] = this.F.pow(nqr, rem);
-    this.wi[s] = this.F.inv(this.w[s]);
-
-    let n = s - 1;
-    while (n >= 0) {
-      this.w[n] = this.F.square(this.w[n + 1]);
-      this.wi[n] = this.F.square(this.wi[n + 1]);
-      n--;
-    }
-
-    this.roots = [];
-    /*
-        for (let i=0; i<16; i++) {
-            let r = this.F.one;
-            n = 1 << i;
-            const rootsi = new Array(n);
-            for (let j=0; j<n; j++) {
-                rootsi[j] = r;
-                r = this.F.mul(r, this.w[i]);
-            }
-
-            this.roots.push(rootsi);
+    while (! rem.eq(bigInt.zero)) {
+        if (rem.and(bigInt.one).eq(bigInt.one)) {
+            res = F.add(res, exp);
         }
-        */
-    this._setRoots(Math.min(s, 15));
-  }
-
-  _setRoots(n) {
-    for (let i = n; i >= 0 && !this.roots[i]; i--) {
-      let r = this.F.one;
-      const nroots = 1 << i;
-      const rootsi = new Array(nroots);
-      for (let j = 0; j < nroots; j++) {
-        rootsi[j] = r;
-        r = this.F.mul(r, this.w[i]);
-      }
-
-      this.roots[i] = rootsi;
+        exp = F.double(exp);
+        rem = rem.shiftRight(1);
     }
-  }
 
-  fft(p) {
-    if (p.length <= 1) return p;
-    const bits = log2(p.length - 1) + 1;
-    this._setRoots(bits);
-
-    const m = 1 << bits;
-    if (p.length != m) {
-      throw new Error("Size must be multiple of 2");
-    }
-    const res = __fft(this, p, bits, 0, 1);
     return res;
+};
+*/
+
+function exp(F, base, e) {
+  if (isZero(e)) return F.one;
+
+  const n = bits(e);
+
+  if (n.length == 0) return F.one;
+
+  let res = base;
+
+  for (let i = n.length - 2; i >= 0; i--) {
+    res = F.square(res);
+
+    if (n[i]) {
+      res = F.mul(res, base);
+    }
   }
 
-  ifft(p) {
-    if (p.length <= 1) return p;
-    const bits = log2(p.length - 1) + 1;
-    this._setRoots(bits);
-    const m = 1 << bits;
-    if (p.length != m) {
-      throw new Error("Size must be multiple of 2");
-    }
-    const res = __fft(this, p, bits, 0, 1);
-    const twoinvm = this.F.inv(this.F.mulScalar(this.F.one, m));
-    const resn = new Array(m);
-    for (let i = 0; i < m; i++) {
-      resn[i] = this.opMulGF(res[(m - i) % m], twoinvm);
-    }
-
-    return resn;
-  }
+  return res;
 }
 
-function log2(V) {
-  return (
-    ((V & 0xffff0000) !== 0 ? ((V &= 0xffff0000), 16) : 0) |
-    ((V & 0xff00ff00) !== 0 ? ((V &= 0xff00ff00), 8) : 0) |
-    ((V & 0xf0f0f0f0) !== 0 ? ((V &= 0xf0f0f0f0), 4) : 0) |
-    ((V & 0xcccccccc) !== 0 ? ((V &= 0xcccccccc), 2) : 0) |
-    ((V & 0xaaaaaaaa) !== 0)
-  );
-}
-
-function __fft(PF, pall, bits, offset, step) {
-  const n = 1 << bits;
-  if (n == 1) {
-    return [pall[offset]];
-  } else if (n == 2) {
-    return [PF.G.add(pall[offset], pall[offset + step]), PF.G.sub(pall[offset], pall[offset + step])];
+function getRandomBytes(n) {
+  let array = new Uint8Array(n);
+  // Browser & Node
+  if (typeof globalThis.crypto !== "undefined") {
+    // Supported
+    globalThis.crypto.getRandomValues(array);
+  } else {
+    // fallback
+    for (let i = 0; i < n; i++) {
+      array[i] = (Math.random() * 4294967296) >>> 0;
+    }
   }
-
-  const ndiv2 = n >> 1;
-  const p1 = __fft(PF, pall, bits - 1, offset, step * 2);
-  const p2 = __fft(PF, pall, bits - 1, offset + step, step * 2);
-
-  const out = new Array(n);
-
-  for (let i = 0; i < ndiv2; i++) {
-    out[i] = PF.G.add(p1[i], PF.opMulGF(p2[i], PF.roots[bits][i]));
-    out[i + ndiv2] = PF.G.sub(p1[i], PF.opMulGF(p2[i], PF.roots[bits][i]));
-  }
-
-  return out;
+  return array;
 }
 
 /* global BigInt */
