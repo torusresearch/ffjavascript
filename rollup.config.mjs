@@ -12,14 +12,6 @@ export default [
     input: "main.js",
     output: [
       {
-        file: "build/main.cjs.js",
-        format: "cjs",
-      },
-      {
-        file: "build/main.esm.js",
-        format: "esm",
-      },
-      {
         dir: "build/lib.cjs",
         format: "cjs",
         preserveModules: true,
