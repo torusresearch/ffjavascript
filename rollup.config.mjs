@@ -1,5 +1,5 @@
-import fs from "fs";
 import terser from "@rollup/plugin-terser";
+import fs from "fs";
 
 function firstLetterUpperCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -11,14 +11,6 @@ export default [
   {
     input: "main.js",
     output: [
-      {
-        file: "build/main.cjs.js",
-        format: "cjs",
-      },
-      {
-        file: "build/main.esm.js",
-        format: "esm",
-      },
       {
         dir: "build/lib.cjs",
         format: "cjs",

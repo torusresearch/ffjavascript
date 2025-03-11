@@ -1,8 +1,8 @@
-import { bitLength, toRprLE, toRprBE, fromRprLE, fromRprBE } from './scalar.js';
-import { exp } from './futils.js';
-import buildSqrt from './fsqrt.js';
-import { getRandomBytes } from './random.js';
 import FFT from './fft.js';
+import buildSqrt from './fsqrt.js';
+import { exp } from './futils.js';
+import { getRandomBytes } from './random.js';
+import { bitLength, toRprLE, toRprBE, fromRprLE, fromRprBE } from './scalar.js';
 
 /* global BigInt */
 

@@ -1,10 +1,10 @@
 'use strict';
 
-var scalar = require('./scalar.js');
-var futils = require('./futils.js');
-var fsqrt = require('./fsqrt.js');
-var random = require('./random.js');
 var fft = require('./fft.js');
+var fsqrt = require('./fsqrt.js');
+var futils = require('./futils.js');
+var random = require('./random.js');
+var scalar = require('./scalar.js');
 
 /* global BigInt */
 

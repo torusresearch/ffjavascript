@@ -11,7 +11,13 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "test": "mocha",
+    "lint": "eslint --fix 'src/**/*.js'",
+    "test": "npm run test:node && npm run test:browsers",
+    "test:node": "vitest run --config test/configs/node.config.mts --coverage",
+    "test:chrome": "vitest run --config test/configs/chrome.config.mts",
+    "test:firefox": "vitest run --config test/configs/firefox.config.mts --coverage",
+    "test:safari": "vitest run --config test/configs/safari.config.mts --coverage",
+    "test:browsers": "npm run test:chrome && npm run test:firefox && npm run test:safari",
     "build": "rimraf build/ && rollup -c rollup.config.mjs"
   },
   "repository": {
@@ -33,19 +39,22 @@
   },
   "homepage": "https://github.com/iden3/ffjs#readme",
   "devDependencies": {
-    "@rollup/plugin-terser": "^0.4.3",
-    "chai": "^4.3.7",
-    "eslint": "^8.46.0",
-    "mocha": "^10.2.0",
-    "rimraf": "^5.0.1",
-    "rollup": "^3.27.2",
-    "tsx": "^4.19.0"
+    "@rollup/plugin-terser": "^0.4.4",
+    "@toruslabs/eslint-config-javascript": "^4.1.0",
+    "@vitest/browser": "^3.0.8",
+    "@vitest/coverage-istanbul": "^3.0.8",
+    "eslint": "^9.22.0",
+    "playwright": "^1.51.0",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.35.0",
+    "tsx": "^4.19.3",
+    "vitest": "^3.0.8"
   },
   "publishConfig": {
     "access": "public"
   },
   "engines": {
-    "node": ">=18.x",
+    "node": ">=20.x",
     "npm": ">=9.x"
   }
 }
