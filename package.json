@@ -1,6 +1,6 @@
 {
   "name": "@toruslabs/ffjavascript",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Finite Field Library in Javascript",
   "main": "./build/lib.cjs/main.js",
   "module": "./build/lib.esm/main.js",
